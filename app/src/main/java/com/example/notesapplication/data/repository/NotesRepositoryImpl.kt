@@ -1,0 +1,17 @@
+package com.example.notesapplication.data.repository
+
+import com.example.notesapplication.data.local.TokenRepository
+import com.example.notesapplication.data.remote.ApiService
+import com.example.notesapplication.domain.model.Note
+import com.example.notesapplication.domain.repository.NotesRepository
+import javax.inject.Inject
+
+class NotesRepositoryImpl @Inject constructor(
+    private val apiService: ApiService,
+    private val tokenRepository: TokenRepository
+) : NotesRepository {
+    override suspend fun getNotes(): List<Note> {
+        val token = tokenRepository.getToken()
+        return apiService.getNotes("Bearer $token")
+    }
+}

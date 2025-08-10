@@ -10,12 +10,18 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,44 +34,63 @@ import androidx.navigation.compose.rememberNavController
 import com.example.logindemousingcompose.R
 import com.example.notesapplication.domain.model.Note
 import com.example.notesapplication.presentation.components.HeadingTextComponent
-import com.example.notesapplication.presentation.components.MyTextFieldComponent
 
 @Composable
 fun HomeScreen(
-    navController: NavController,
-    viewModel: HomeViewModel = hiltViewModel()
+    navController: NavController, viewModel: HomeViewModel = hiltViewModel()
 ) {
     val notes = viewModel.notesList.value
     val loading = viewModel.isLoading.value
 
-    if (loading) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator()
-        }
+    LaunchedEffect(Unit) {
+        viewModel.loadNotes()
+    }
 
-    } else {
-        Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.White)
-                .padding(28.dp)
-        ) {
-            Column {
-                HeadingTextComponent(value = stringResource(R.string.notes_list))
-                Spacer(modifier = Modifier.height(20.dp))
-                LazyColumn {
-                    items(notes) { note ->
-                        NoteItem(note)
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { navController.navigate("addnote") }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add Note"
+                )
+            }
+        }
+    ) { innerPadding ->
+
+        if (loading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+
+        } else {
+            Surface(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.White)
+                    .padding(28.dp)
+                    .padding(innerPadding)
+            ) {
+                Column {
+                    HeadingTextComponent(value = stringResource(R.string.notes_list))
+                    Spacer(modifier = Modifier.height(20.dp))
+                    LazyColumn {
+                        items(notes) { note ->
+                            NoteItem(note)
+                        }
                     }
                 }
             }
         }
-
     }
 }
+
 
 @Composable
 fun NoteItem(note: Note) {

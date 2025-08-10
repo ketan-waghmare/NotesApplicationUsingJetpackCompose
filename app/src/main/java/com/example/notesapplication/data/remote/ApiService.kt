@@ -13,4 +13,10 @@ interface ApiService {
 
     @GET("/api/notes")
     suspend fun getNotes(@Header("Authorization") token: String): List<Note>
+
+    @POST("/api/notes/create-note")
+    suspend fun createNote(
+        @Header("Authorization") token: String,
+        @Body note: NoteRequest
+    ): Note
 }

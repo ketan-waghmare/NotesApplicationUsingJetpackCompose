@@ -2,6 +2,7 @@ package com.example.notesapplication.data.repository
 
 import com.example.notesapplication.data.local.TokenRepository
 import com.example.notesapplication.data.remote.ApiService
+import com.example.notesapplication.data.remote.NoteRequest
 import com.example.notesapplication.domain.model.Note
 import com.example.notesapplication.domain.repository.NotesRepository
 import javax.inject.Inject
@@ -13,5 +14,10 @@ class NotesRepositoryImpl @Inject constructor(
     override suspend fun getNotes(): List<Note> {
         val token = tokenRepository.getToken()
         return apiService.getNotes("Bearer $token")
+    }
+
+    override suspend fun createNote(title: String, description: String): Note {
+        val token = tokenRepository.getToken()
+        return apiService.createNote("Bearer $token", NoteRequest(title,description))
     }
 }

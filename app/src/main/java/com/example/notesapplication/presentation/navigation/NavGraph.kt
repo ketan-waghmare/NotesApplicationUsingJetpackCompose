@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.notesapplication.presentation.screens.Login
 import com.example.notesapplication.presentation.screens.SignUp
+import com.example.notesapplication.presentation.screens.addnotes.AddNotes
 import com.example.notesapplication.presentation.screens.dashboard.HomeScreen
 
 @Composable
@@ -22,6 +23,9 @@ fun NavigationGraph(navController: NavHostController) {
         }
         composable("homescreen") {
             HomeScreen(navController) // Create this screen
+        }
+        composable("addnote") {
+            AddNotes(navController) // Create this screen
         }
 
     }

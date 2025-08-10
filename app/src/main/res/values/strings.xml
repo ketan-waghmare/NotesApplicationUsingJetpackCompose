@@ -13,5 +13,9 @@
     <string name="welcome">Welcome</string>
     <string name="notes_list">Notes List</string>
     <string name="or">Or</string>
+    <string name="title">Title</string>
+    <string name="description">Description</string>
+    <string name="create">Create</string>
+    <string name="add_note">Add New Note</string>
 
 </resources>

@@ -87,7 +87,7 @@ fun HeadingTextComponent(value: String) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyTextFieldComponent(lableValue: String,painterResource: Painter,onTextSelected: (String) -> Unit) {
+fun MyTextFieldComponent(lableValue: String,painterResource: Painter?,onTextSelected: (String) -> Unit) {
     val textValue = remember { mutableStateOf("") }
 
     OutlinedTextField(
@@ -108,7 +108,9 @@ fun MyTextFieldComponent(lableValue: String,painterResource: Painter,onTextSelec
         ),
         keyboardOptions = KeyboardOptions.Default,
         leadingIcon = {
-            Icon(painter = painterResource, contentDescription = "")
+            if (painterResource != null) {
+                Icon(painter = painterResource, contentDescription = "")
+            }
         },
     )
 }

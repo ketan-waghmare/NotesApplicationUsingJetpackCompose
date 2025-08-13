@@ -82,7 +82,9 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(20.dp))
                     LazyColumn {
                         items(notes) { note ->
-                            NoteItem(note)
+                            NoteItem(note) {
+                                navController.navigate("note_details/${note.id}")
+                            }
                         }
                     }
                 }
@@ -93,8 +95,9 @@ fun HomeScreen(
 
 
 @Composable
-fun NoteItem(note: Note) {
+fun NoteItem(note: Note, onClick: () -> Unit) {
     Card(
+        onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)

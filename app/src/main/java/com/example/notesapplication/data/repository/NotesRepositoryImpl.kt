@@ -20,4 +20,18 @@ class NotesRepositoryImpl @Inject constructor(
         val token = tokenRepository.getToken()
         return apiService.createNote("Bearer $token", NoteRequest(title,description))
     }
+
+    override suspend fun getNoteById(id: String): Note {
+        val token = tokenRepository.getToken()
+        return apiService.getNoteById("Bearer $token",id)
+    }
+
+    override suspend fun updateNote(
+        id: String,
+        title: String,
+        description: String
+    ): Note {
+        val token = tokenRepository.getToken()
+        return apiService.updateNote("Bearer $token",id, NoteRequest(title,description))
+    }
 }

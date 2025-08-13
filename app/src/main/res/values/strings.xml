@@ -17,5 +17,7 @@
     <string name="description">Description</string>
     <string name="create">Create</string>
     <string name="add_note">Add New Note</string>
+    <string name="edit_note">Edit Note</string>
+    <string name="update_note">Update</string>
 
 </resources>

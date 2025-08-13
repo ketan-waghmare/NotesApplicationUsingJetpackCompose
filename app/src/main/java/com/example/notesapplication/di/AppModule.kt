@@ -10,8 +10,10 @@ import com.example.notesapplication.data.repository.NotesRepositoryImpl
 import com.example.notesapplication.domain.repository.AuthRepository
 import com.example.notesapplication.domain.repository.NotesRepository
 import com.example.notesapplication.domain.usecase.AddNoteUseCase
+import com.example.notesapplication.domain.usecase.GetNoteByIdUseCase
 import com.example.notesapplication.domain.usecase.GetNotesUseCase
 import com.example.notesapplication.domain.usecase.LoginUsecase
+import com.example.notesapplication.domain.usecase.UpdateNoteUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -74,5 +76,15 @@ object AppModule {
     @Provides
     fun provideAddNoteUseCase(repository: NotesRepository): AddNoteUseCase {
         return AddNoteUseCase(repository)
+    }
+
+    @Provides
+    fun provideUpdateNoteUseCase(repository: NotesRepository) : UpdateNoteUseCase {
+        return UpdateNoteUseCase(repository)
+    }
+
+    @Provides
+    fun provideGetNoteByIdUseCase(repository: NotesRepository) : GetNoteByIdUseCase {
+        return GetNoteByIdUseCase(repository)
     }
 }

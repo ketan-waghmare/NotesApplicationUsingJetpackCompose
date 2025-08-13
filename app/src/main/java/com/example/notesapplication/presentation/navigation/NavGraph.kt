@@ -8,6 +8,7 @@ import com.example.notesapplication.presentation.screens.Login
 import com.example.notesapplication.presentation.screens.SignUp
 import com.example.notesapplication.presentation.screens.addnotes.AddNotes
 import com.example.notesapplication.presentation.screens.dashboard.HomeScreen
+import com.example.notesapplication.presentation.screens.notedetails.NoteDetailScreen
 
 @Composable
 fun NavigationGraph(navController: NavHostController) {
@@ -26,6 +27,10 @@ fun NavigationGraph(navController: NavHostController) {
         }
         composable("addnote") {
             AddNotes(navController) // Create this screen
+        }
+        composable("note_details/{noteId}") { backStackEntry ->
+            val noteId = backStackEntry.arguments?.getString("noteId") ?: ""
+            NoteDetailScreen(noteId,navController)
         }
 
     }

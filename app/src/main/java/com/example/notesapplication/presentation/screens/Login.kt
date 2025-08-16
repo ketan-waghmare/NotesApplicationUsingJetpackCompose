@@ -13,7 +13,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.graphics.Color
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
@@ -41,7 +45,14 @@ import com.example.notesapplication.presentation.viewmodels.UIEvent
 fun Login(navController: NavHostController) {
     val context = LocalContext.current;
     val viewModel: AuthViewModel = hiltViewModel()
-    val loginSuccess by viewModel.loginSuccess
+
+    val loginSuccess by viewModel.loginSuccess.collectAsState()
+    val loginState = viewModel.authUIstate.collectAsState()
+
+    // Local UI flags — preserve across config changes
+    var usernameTouched by rememberSaveable { mutableStateOf(false) }
+    var passwordTouched by rememberSaveable { mutableStateOf(false) }
+    var attemptedSubmit by rememberSaveable { mutableStateOf(false) }
 
     // ✅ Navigate on success
     LaunchedEffect(loginSuccess) {
@@ -67,26 +78,38 @@ fun Login(navController: NavHostController) {
 
                 Spacer(modifier = Modifier.height(20.dp))
 
+
+                // Determine whether to show username error visually
+                val showUsernameError = loginState.value.userNameError != null && (usernameTouched || attemptedSubmit)
                 MyTextFieldComponent(
                     lableValue = stringResource(R.string.userName),
                     painterResource = painterResource(id = R.drawable.email),
                     onTextSelected = {
+                        if (!usernameTouched) usernameTouched = true
                         viewModel.onEvent(UIEvent.UserNameChanged(it))
-                    }
+                    },
+                    isError = showUsernameError,
+                    errorText = loginState.value.userNameError
                 )
 
+                //Determin whether to show password error visually
+                val showPasswordError = loginState.value.passwordError != null && (passwordTouched || attemptedSubmit)
                 PasswordTextComponent(
                     lableValue = stringResource(R.string.password),
                     painterResource = painterResource(id = R.drawable.lock),
                     onTextSelected = {
+                        if (!passwordTouched) passwordTouched = true
                         viewModel.onEvent(UIEvent.PasswordChanged(it))
                     },
+                    isError = showPasswordError,
+                    errorText = loginState.value.passwordError
                 )
 
                 Spacer(modifier = Modifier.height(10.dp))
 
                 Spacer(modifier = Modifier.height(40.dp))
                 ButtonComponent(value = stringResource(R.string.login), onButtonClicked = {
+                    attemptedSubmit = true
                     viewModel.onEvent(UIEvent.LoginButtonClicked)
                 })
 

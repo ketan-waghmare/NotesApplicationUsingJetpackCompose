@@ -9,7 +9,12 @@ import androidx.lifecycle.viewModelScope
 import com.example.notesapplication.domain.usecase.GetTokenUseCase
 import com.example.notesapplication.domain.usecase.LoginUsecase
 import com.example.notesapplication.domain.usecase.SaveTokenUseCase
+import com.example.notesapplication.domain.validation.ValidatePassword
+import com.example.notesapplication.domain.validation.ValidateUsername
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import okhttp3.internal.userAgent
 import javax.inject.Inject
@@ -18,39 +23,58 @@ import javax.inject.Inject
 class AuthViewModel @Inject constructor(
     private val loginUsecase: LoginUsecase,
     private val saveTokenUseCase: SaveTokenUseCase,
-    private val getTokenUseCase: GetTokenUseCase
+    private val validateUsername: ValidateUsername,
+    private val validatePassword: ValidatePassword
 ) : ViewModel() {
 
     private val TAG = AuthViewModel::class.simpleName
 
-    private val _loginSuccess = mutableStateOf(false)
-    val loginSuccess: State<Boolean> = _loginSuccess
+//    private val _loginSuccess = mutableStateOf(false)
+//    val loginSuccess: State<Boolean> = _loginSuccess
+//    var authUIstate = mutableStateOf(AuthUIstate())
 
-    var authUIstate = mutableStateOf(AuthUIstate())
+    private val _authUIstate = MutableStateFlow(AuthUIstate())
+    val authUIstate: StateFlow<AuthUIstate> = _authUIstate
+
+    private val _loginSuccess = MutableStateFlow(false)
+    val loginSuccess: StateFlow<Boolean> = _loginSuccess
+
 
     fun onEvent(event: UIEvent) {
-        when(event) {
+        when (event) {
 
             is UIEvent.EmailChanged -> {
-                authUIstate.value = authUIstate.value.copy(
-                    email = event.email
-                )
+//                authUIstate.update() = authUIstate.value.copy(
+//                    email = event.email
+//                )
+
+                _authUIstate.update { it.copy(email = event.email, emailError = null) }
             }
 
             is UIEvent.PasswordChanged -> {
-                authUIstate.value = authUIstate.value.copy(
-                    password = event.password
-                )
+//                authUIstate.value = authUIstate.value.copy(
+//                    password = event.password
+//                )
 
-                print("UIState_Password = "+event.password)
+                _authUIstate.update {
+                    it.copy(
+                        password = event.password,
+                        passwordError = null
+                    )
+                }
             }
 
             is UIEvent.UserNameChanged -> {
-                authUIstate.value = authUIstate.value.copy(
-                    userName = event.userName
-                )
+//                authUIstate.value = authUIstate.value.copy(
+//                    userName = event.userName
+//                )
 
-                print("UIState_UserName =" +event.userName)
+                _authUIstate.update {
+                    it.copy(
+                        userName = event.userName,
+                        userNameError = null
+                    )
+                }
             }
 
             is UIEvent.LoginButtonClicked -> {
@@ -64,36 +88,67 @@ class AuthViewModel @Inject constructor(
     }
 
     private fun callLoginAPI() {
-        val state = authUIstate.value
+        val state = _authUIstate.value
+
+//        val usernameResult = validateUsername(state.userName)
+//        val passwordResult = validatePassword(state.password)
+//
+//        val hasError = listOf(usernameResult, passwordResult).any { !it.successful }
+//        if (hasError) {
+//            authUIstate.value = authUIstate.value.copy(
+//                userNameError = usernameResult.erroMessage,
+//                passwordError = passwordResult.erroMessage
+//            )
+//            return
+//        }
+
+        // run validators (return null if ok or error message)
+
+        val usernameResult = validateUsername(state.userName)
+        val usernameError = if (!usernameResult.successful) usernameResult.erroMessage else null
+
+        val passwordResult = validatePassword(state.password)
+        val passwordError = if (!passwordResult.successful) "Password invalid" else null
+
+
+        // If there are validation errors, update state so UI can show them
+        if (usernameError != null || passwordError != null) {
+            _authUIstate.update {
+                it.copy(
+                    userNameError = usernameError,
+                    passwordError = passwordError
+                )
+            }
+            return
+        }
+
         viewModelScope.launch {
             try {
-                authUIstate.value = state.copy(isLoading = true)
-
-                Log.d(TAG,"requestData = ${authUIstate.value.userName + authUIstate.value.password}")
-
+                _authUIstate.update {
+                    it.copy(
+                        isLoading = true
+                    )
+                }
                 val response = loginUsecase(authUIstate.value.userName, authUIstate.value.password)
-
-                if(response.isSuccessful) {
+                if (response.isSuccessful) {
                     _loginSuccess.value = true
                     saveTokenUseCase(response.body().toString())
                 }
 
-                authUIstate.value = state.copy(
-                    isLoading = false,
-                )
-
+                _authUIstate.update {
+                    it.copy(
+                        isLoading = false
+                    )
+                }
             } catch (e: Exception) {
                 Log.e(TAG, "Login failed", e)
-                authUIstate.value = state.copy(
-                    isLoading = false,
-                    errorMessage = e.localizedMessage ?: "Unknown error"
-                )
+                _authUIstate.update { it.copy(isLoading = false) }
             }
         }
     }
 
     private fun callSignUpAPI() {
-        Log.d(TAG,"CallSignUpAPI")
+        Log.d(TAG, "CallSignUpAPI")
     }
 
 

@@ -74,7 +74,7 @@ fun HomeScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(Color.White)
-                    .padding(28.dp)
+                    .padding(8.dp)
                     .padding(innerPadding)
             ) {
                 Column {
@@ -101,6 +101,7 @@ fun NoteItem(note: Note, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
+
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(text = note.title, style = MaterialTheme.typography.titleMedium)

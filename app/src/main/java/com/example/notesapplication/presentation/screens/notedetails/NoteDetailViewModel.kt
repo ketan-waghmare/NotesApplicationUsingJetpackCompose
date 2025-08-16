@@ -25,6 +25,8 @@ class NoteDetailViewModel @Inject constructor(
     val noteDetailSuccess: State<Boolean> = _noteDetailSuccess
     var noteDetailState = mutableStateOf(NoteDetailUIState())
 
+    var loading = mutableStateOf(false)
+
     fun onEvent(event: NoteDetailUIEvent) {
         when(event) {
             is NoteDetailUIEvent.DescriptionChanged -> {
@@ -51,13 +53,17 @@ class NoteDetailViewModel @Inject constructor(
     fun getNotesDetails(noteId: String) {
         viewModelScope.launch {
             try {
+
+                loading.value = true
                 val response = getNoteByIdUseCase(noteId)
                 noteDetailState.value = noteDetailState.value.copy(
                     noteId = response.id,
                     title = response.title,
                     description = response.description
                 )
+                loading.value = false
             } catch (e: Exception) {
+                loading.value = false
                 Log.d("NoteDetailViewModel", " Exception = "+e.message)
             }
         }
@@ -66,12 +72,15 @@ class NoteDetailViewModel @Inject constructor(
     fun updateNote(noteId: String, title: String, description: String){
         viewModelScope.launch {
             try {
+                loading.value = true
                 val response = updateNoteUseCase(noteId,title,description)
                 if(response.id.isNotBlank()) {
                     _noteDetailSuccess.value = true
+                    loading.value = false
                     Log.d("NoteDetailsViewModel","Notes Updated Successfully")
                 }
             } catch (e: Exception) {
+                loading.value = false
                 Log.d("NoteDetailsViewModel","Failed to update")
             }
         }

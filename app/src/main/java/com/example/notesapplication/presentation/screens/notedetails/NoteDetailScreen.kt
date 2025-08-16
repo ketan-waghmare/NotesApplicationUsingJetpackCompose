@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -36,6 +37,7 @@ fun NoteDetailScreen(
 ) {
     val viewModel: NoteDetailViewModel = hiltViewModel()
     val noteState = viewModel.noteDetailState.value
+    val loading = viewModel.loading.value
 
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
@@ -57,46 +59,60 @@ fun NoteDetailScreen(
         description = noteState.description
     }
 
+    if(loading) {
+
+    } else {
+
+    }
+
     Scaffold(
         modifier = Modifier.fillMaxSize().background(Color.White).padding(16.dp)
     ) { paddingValues ->
-        Box(
-            modifier = Modifier.fillMaxSize().padding(paddingValues),
-            contentAlignment = Alignment.Center
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
+
+        if(loading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentAlignment = Alignment.Center
             ) {
-                HeadingTextComponent(value = stringResource(R.string.edit_note))
-                Spacer(Modifier.height(16.dp))
-
-                OutlinedTextField(
-                    value = title,
-                    onValueChange = {
-                        viewModel.onEvent(NoteDetailUIEvent.TitleChanged(it))
-                    },
-                    label = { Text("Title") },
-                    modifier = Modifier.fillMaxWidth(0.9f)
-                )
-
-                Spacer(Modifier.height(16.dp))
-
-                OutlinedTextField(
-                    value = description,
-                    onValueChange = {
-                        viewModel.onEvent(NoteDetailUIEvent.DescriptionChanged(it))
-                    },
-                    label = { Text("Description")},
-                    modifier = Modifier.fillMaxWidth(0.9f)
-                )
-
-                Spacer(Modifier.height(16.dp))
-
-                ButtonComponent(value = "Update", onButtonClicked = {
-                    viewModel.onEvent(NoteDetailUIEvent.updateNoteClicked)
-                })
+                CircularProgressIndicator()
+            }
+        } else {
+            Box(
+                modifier = Modifier.fillMaxSize().padding(paddingValues),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    HeadingTextComponent(value = stringResource(R.string.edit_note))
+                    Spacer(Modifier.height(16.dp))
+                    OutlinedTextField(
+                        value = title,
+                        onValueChange = {
+                            viewModel.onEvent(NoteDetailUIEvent.TitleChanged(it))
+                        },
+                        label = { Text("Title") },
+                        modifier = Modifier.fillMaxWidth(0.9f)
+                    )
+                    Spacer(Modifier.height(16.dp))
+                    OutlinedTextField(
+                        value = description,
+                        onValueChange = {
+                            viewModel.onEvent(NoteDetailUIEvent.DescriptionChanged(it))
+                        },
+                        label = { Text("Description")},
+                        modifier = Modifier.fillMaxWidth(0.9f)
+                    )
+                    Spacer(Modifier.height(16.dp))
+                    ButtonComponent(value = "Update", onButtonClicked = {
+                        viewModel.onEvent(NoteDetailUIEvent.updateNoteClicked)
+                    })
+                }
             }
         }
+
     }
 
 }

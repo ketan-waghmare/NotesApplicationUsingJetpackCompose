@@ -44,18 +44,10 @@ class AuthViewModel @Inject constructor(
         when (event) {
 
             is UIEvent.EmailChanged -> {
-//                authUIstate.update() = authUIstate.value.copy(
-//                    email = event.email
-//                )
-
                 _authUIstate.update { it.copy(email = event.email, emailError = null) }
             }
 
             is UIEvent.PasswordChanged -> {
-//                authUIstate.value = authUIstate.value.copy(
-//                    password = event.password
-//                )
-
                 _authUIstate.update {
                     it.copy(
                         password = event.password,
@@ -65,10 +57,6 @@ class AuthViewModel @Inject constructor(
             }
 
             is UIEvent.UserNameChanged -> {
-//                authUIstate.value = authUIstate.value.copy(
-//                    userName = event.userName
-//                )
-
                 _authUIstate.update {
                     it.copy(
                         userName = event.userName,
@@ -89,20 +77,6 @@ class AuthViewModel @Inject constructor(
 
     private fun callLoginAPI() {
         val state = _authUIstate.value
-
-//        val usernameResult = validateUsername(state.userName)
-//        val passwordResult = validatePassword(state.password)
-//
-//        val hasError = listOf(usernameResult, passwordResult).any { !it.successful }
-//        if (hasError) {
-//            authUIstate.value = authUIstate.value.copy(
-//                userNameError = usernameResult.erroMessage,
-//                passwordError = passwordResult.erroMessage
-//            )
-//            return
-//        }
-
-        // run validators (return null if ok or error message)
 
         val usernameResult = validateUsername(state.userName)
         val usernameError = if (!usernameResult.successful) usernameResult.erroMessage else null

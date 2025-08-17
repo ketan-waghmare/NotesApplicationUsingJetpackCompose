@@ -3,6 +3,7 @@ package com.example.notesapplication.data.remote
 import com.example.notesapplication.domain.model.Note
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
@@ -35,5 +36,11 @@ interface ApiService {
         @Body request: NoteRequest
     ) : Note
 
+
+    @DELETE("/api/notes/id/{id}")
+    suspend fun deleteNote(
+        @Header("Authorization") token: String,
+        @Path("id") id: String
+    ) : Response<Void>
 
 }

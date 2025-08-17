@@ -5,6 +5,7 @@ import com.example.notesapplication.data.remote.ApiService
 import com.example.notesapplication.data.remote.NoteRequest
 import com.example.notesapplication.domain.model.Note
 import com.example.notesapplication.domain.repository.NotesRepository
+import retrofit2.Response
 import javax.inject.Inject
 
 class NotesRepositoryImpl @Inject constructor(
@@ -33,5 +34,11 @@ class NotesRepositoryImpl @Inject constructor(
     ): Note {
         val token = tokenRepository.getToken()
         return apiService.updateNote("Bearer $token",id, NoteRequest(title,description))
+    }
+
+    override suspend fun deleteNote(id: String): Response<Void> {
+        val token = tokenRepository.getToken()
+        return apiService.deleteNote("Bearer $token",id)
+
     }
 }

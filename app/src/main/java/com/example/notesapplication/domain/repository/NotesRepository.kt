@@ -11,4 +11,6 @@ interface NotesRepository {
     suspend fun getNoteById(id: String) : Note
 
     suspend fun updateNote(id: String,title: String,description: String) : Note
+
+    suspend fun deleteNote(id: String) : retrofit2.Response<Void>
 }

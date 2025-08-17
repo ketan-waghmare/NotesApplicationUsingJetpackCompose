@@ -1,15 +1,14 @@
 package com.example.notesapplication.di
 
 
-import android.content.Context
 import com.example.notesapplication.data.local.TokenRepository
-import com.example.notesapplication.data.local.TokenRepositoryImpl
 import com.example.notesapplication.data.remote.ApiService
 import com.example.notesapplication.data.repository.AuthRepositoryImpl
 import com.example.notesapplication.data.repository.NotesRepositoryImpl
 import com.example.notesapplication.domain.repository.AuthRepository
 import com.example.notesapplication.domain.repository.NotesRepository
 import com.example.notesapplication.domain.usecase.AddNoteUseCase
+import com.example.notesapplication.domain.usecase.DeleteNoteUseCase
 import com.example.notesapplication.domain.usecase.GetNoteByIdUseCase
 import com.example.notesapplication.domain.usecase.GetNotesUseCase
 import com.example.notesapplication.domain.usecase.LoginUsecase
@@ -86,5 +85,10 @@ object AppModule {
     @Provides
     fun provideGetNoteByIdUseCase(repository: NotesRepository) : GetNoteByIdUseCase {
         return GetNoteByIdUseCase(repository)
+    }
+
+    @Provides
+    fun provideDeleteNoteUseCase(repository: NotesRepository) : DeleteNoteUseCase {
+        return DeleteNoteUseCase(repository)
     }
 }

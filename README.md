@@ -41,6 +41,3 @@ It uses a custom **Spring Boot + MongoDB backend** for storing notes securely.
 
 
 
-```markdown
-![Home Screen](screenshots/home.png)
-![Add Note](screenshots/add_note.png)

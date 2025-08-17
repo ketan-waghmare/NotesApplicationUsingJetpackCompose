@@ -6,6 +6,7 @@ It uses a custom **Spring Boot + MongoDB backend** for storing notes securely.
 ---
 
 ## 🚀 Features
+- registration and login of new user
 - ✍️ Add, edit, and delete notes
 - 📑 View list of notes in a clean UI
 - 🔄 Swipe-to-delete with Undo option

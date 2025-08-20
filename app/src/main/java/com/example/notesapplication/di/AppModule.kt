@@ -12,6 +12,7 @@ import com.example.notesapplication.domain.usecase.DeleteNoteUseCase
 import com.example.notesapplication.domain.usecase.GetNoteByIdUseCase
 import com.example.notesapplication.domain.usecase.GetNotesUseCase
 import com.example.notesapplication.domain.usecase.LoginUsecase
+import com.example.notesapplication.domain.usecase.SignupUseCase
 import com.example.notesapplication.domain.usecase.UpdateNoteUseCase
 import dagger.Module
 import dagger.Provides
@@ -55,6 +56,11 @@ object AppModule {
     @Provides
     fun provideLoginUseCase(repository: AuthRepository): LoginUsecase {
         return LoginUsecase(repository)
+    }
+
+    @Provides
+    fun provideSignupUseCase(repository: AuthRepository) : SignupUseCase{
+        return SignupUseCase(repository)
     }
 
     @Provides

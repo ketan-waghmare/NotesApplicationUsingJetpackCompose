@@ -14,6 +14,9 @@ interface ApiService {
     @POST("public/login")
     suspend fun login(@Body request: LoginRequest): Response<String>
 
+    @POST("public/create-user")
+    suspend fun signup(@Body request: SignupRequest) : Response<Void>
+
     @GET("/api/notes")
     suspend fun getNotes(@Header("Authorization") token: String): List<Note>
 

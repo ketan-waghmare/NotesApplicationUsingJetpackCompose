@@ -10,6 +10,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,11 +35,29 @@ import com.example.notesapplication.presentation.components.MyTextFieldComponent
 import com.example.notesapplication.presentation.components.NormalTextComponent
 import com.example.notesapplication.presentation.components.PasswordTextComponent
 import com.example.notesapplication.presentation.viewmodels.AuthViewModel
+import com.example.notesapplication.presentation.viewmodels.UIEvent
 
 @Composable
-fun SignUp(navController: NavHostController, loginViewModel: AuthViewModel = hiltViewModel()) {
+fun SignUp(navController: NavHostController, viewModel: AuthViewModel = hiltViewModel()) {
+
+    val signupSuccess by viewModel.signupSuccess.collectAsState()
+    val authState = viewModel.authUIstate.collectAsState()
+
+    // Local UI flags — preserve across config changes
+    var usernameTouched by rememberSaveable { mutableStateOf(false) }
+    var emailTouched by rememberSaveable { mutableStateOf(false) }
+    var passwordTouched by rememberSaveable { mutableStateOf(false) }
+    var attemptedSubmit by rememberSaveable { mutableStateOf(false) }
+
+    LaunchedEffect(signupSuccess) {
+        if (signupSuccess) {
+            navController.navigate("login")
+        }
+    }
+
     Surface(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
             .background(Color.White)
             .padding(28.dp)
     ) {
@@ -46,41 +70,55 @@ fun SignUp(navController: NavHostController, loginViewModel: AuthViewModel = hil
                 HeadingTextComponent(value = stringResource(id = R.string.create_account))
                 Spacer(modifier = Modifier.height(20.dp))
 
-                MyTextFieldComponent(lableValue = stringResource(id = R.string.userName),
+                val showUsernameError = authState.value.userNameError != null && (usernameTouched || attemptedSubmit)
+                MyTextFieldComponent(
+                    lableValue = stringResource(id = R.string.userName),
                     painterResource(R.drawable.profile),
                     onTextSelected = {
-//                    loginViewModel.onEvent(UIEvent.FirstNameChanged(it))
-                    }
+                        if (!usernameTouched) usernameTouched = true
+                        viewModel.onEvent(UIEvent.UserNameChanged(it))
+                    },
+                    isError = showUsernameError,
+                    errorText = authState.value.userNameError
                 )
 
+                val showEmailError = authState.value.emailError != null && (emailTouched || attemptedSubmit)
                 MyTextFieldComponent(
                     lableValue = stringResource(id = R.string.email),
                     painterResource = painterResource(R.drawable.email),
                     onTextSelected = {
-//                    loginViewModel.onEvent(UIEvent.EmailChanged(it))
-                    }
+                        if(!passwordTouched) passwordTouched = true
+                        viewModel.onEvent(UIEvent.EmailChanged(it))
+                    },
+                    isError = showEmailError,
+                    errorText = authState.value.emailError
+
                 )
 
+                val showPasswordError = authState.value.passwordError != null && (passwordTouched || attemptedSubmit)
                 PasswordTextComponent(
                     lableValue = stringResource(R.string.password),
                     painterResource = painterResource(R.drawable.lock),
                     onTextSelected = {
-//                    loginViewModel.onEvent(UIEvent.PasswordChanged(it))
-                    }
+                        viewModel.onEvent(UIEvent.PasswordChanged(it))
+                    },
+                    isError = showPasswordError,
+                    errorText = authState.value.passwordError
                 )
 
 
                 Spacer(modifier = Modifier.height(90.dp))
 
                 ButtonComponent(value = stringResource(R.string.register), onButtonClicked = {
-//                loginViewModel.onEvent(UIEvent.RegisterButtonClicked)
+                    attemptedSubmit = true
+                    viewModel.onEvent(UIEvent.RegisterButtonClicked)
                 })
 
                 Spacer(modifier = Modifier.height(20.dp))
 
                 DividerComponent()
 
-                ClickableLoginTextComponent(onTextSelected ={
+                ClickableLoginTextComponent(onTextSelected = {
                     navController.navigate("login")
                 })
             }
@@ -91,7 +129,7 @@ fun SignUp(navController: NavHostController, loginViewModel: AuthViewModel = hil
 }
 
 
-@Preview (showBackground = true)
+@Preview(showBackground = true)
 @Composable
 fun DefaultPreviewOfSignUpScreen() {
     val navController = rememberNavController()

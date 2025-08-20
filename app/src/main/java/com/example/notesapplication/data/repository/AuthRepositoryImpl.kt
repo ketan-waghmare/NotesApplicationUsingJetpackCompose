@@ -2,6 +2,7 @@ package com.example.notesapplication.data.repository
 
 import com.example.notesapplication.data.remote.ApiService
 import com.example.notesapplication.data.remote.LoginRequest
+import com.example.notesapplication.data.remote.SignupRequest
 import com.example.notesapplication.domain.repository.AuthRepository
 import retrofit2.Response
 
@@ -11,5 +12,13 @@ class AuthRepositoryImpl(private val apiService: ApiService) : AuthRepository {
         password: String
     ): Response<String> {
         return apiService.login(LoginRequest(userName,password))
+    }
+
+    override suspend fun signup(
+        userName: String,
+        email: String,
+        password: String
+    ): Response<Void> {
+        return apiService.signup(SignupRequest(userName,email,password))
     }
 }
